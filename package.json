@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@pinata/sdk": "^1.1.25",
+    "canvas-confetti": "^1.5.1",
     "ethers": "^5.6.8",
     "next": "12.1.6",
     "react": "18.1.0",

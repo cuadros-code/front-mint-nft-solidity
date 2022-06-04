@@ -1,108 +1,17 @@
-import { useEffect, useState } from 'react';
-import { ethers } from "ethers";
-import abiContract from '../utils/ImperialToken.json'
-
-const CONTRACT_ADDRESS = "0xD857CEb828c4F360a4c72da857d179bCbB67bFdF";
+import { useEffect } from 'react';
+import useMint from '../hook/useMint';
+import styles from '../styles/Home.module.css'
 
 export default function Home() {
 
-  const [currentAccount, setCurrentAccount] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [totalSupply, setTotalSupply] = useState(0)
-
-  const checkIfWalletExists = async () => {
-
-    const { ethereum } = window
-    if (!ethereum) {
-      return  
-    }
-    const accounts = await ethereum.request({ method: 'eth_accounts' })
-    getTotalSupply()
-    if(accounts.length > 0) {
-      setCurrentAccount(accounts[0])
-      setupEventListener()
-    } else {
-      console.log('no authorized accounts found')
-    }
-
-  }
-
-  const connectWallet = async () => {
-    try {
-      const { ethereum } = window;
-      if (!ethereum) return;
-      const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-      if (accounts.length === 0) return;
-      setCurrentAccount(accounts[0]); 
-      setupEventListener()
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const askContractToMintNft = async () => {
-    setLoading(true)
-    try {
-      const { ethereum } = window;
-  
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const connectedContract = new ethers.Contract(CONTRACT_ADDRESS, abiContract.abi, signer);
-  
-        let nftTxn = await connectedContract.makeAnNFT();
-        await nftTxn.wait();
-        getTotalSupply()
-        console.log(`Mined, see transaction: https://rinkeby.etherscan.io/tx/${nftTxn.hash}`);
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const setupEventListener = async () => {
-    try {
-      const { ethereum } = window;
-
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const connectedContract = new ethers.Contract(CONTRACT_ADDRESS, abiContract.abi, signer);
-
-        connectedContract.on("NewTokenEvent", (from, tokenId) => {
-          console.log(from, tokenId.toNumber())
-          alert(`Hey there!`)
-        });
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const getTotalSupply = async () => {
-    try {
-      const { ethereum } = window;
-
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const connectedContract = new ethers.Contract(CONTRACT_ADDRESS, abiContract.abi, signer);
-
-        let totalSupply = await connectedContract.getTotalSupply();
-        setTotalSupply(totalSupply.toNumber())
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  const {
+    loading,
+    currentAccount,
+    totalSupply,
+    checkIfWalletExists,
+    connectWallet,
+    askContractToMintNft,
+  } = useMint()
 
   useEffect(() => {
     checkIfWalletExists()
@@ -111,13 +20,12 @@ export default function Home() {
   
   return (
     <div className="App">
-      <div className="container">
-        <div className="header-container">
-          <p className="header gradient-text">My NFT Collection</p>
-          <p className="sub-text">
-            Each unique. Each beautiful. Discover your NFT today.
-          </p>
-          {
+      <div className={styles.container}>
+        <h1 className={styles.title}>Bringing the world to Ethereum</h1>
+        <h1 className={styles.title}>With</h1>
+        <h1 className={styles.polygon}>Polygon</h1>
+
+        {
             !currentAccount 
             ?
               <button 
@@ -139,8 +47,20 @@ export default function Home() {
                 }
               </button>
           }
-          <p className='footer-text'>{totalSupply}/50</p>
-        </div>
+          {
+            currentAccount && <p className='footer-text'>{totalSupply}/50</p>
+          }
+          {
+            currentAccount && 
+            <a 
+              className='footer-text' 
+              href={`https://testnets.opensea.io/${currentAccount}`}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              See your NFT
+            </a>
+          }
       </div>
     </div>
   );

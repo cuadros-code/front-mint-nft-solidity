@@ -10,6 +10,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #0d1116;
 }
 
 code {
@@ -18,10 +19,15 @@ code {
 }
 
 .App {
-  height: 100vh;
-  background-color: #0d1116;
+  height: 90vh;
   overflow: auto;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 1000px;
+  color: white;
+  margin: 0 auto;
 }
 
 .container {
