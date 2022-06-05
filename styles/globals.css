@@ -19,13 +19,13 @@ code {
 }
 
 .App {
-  height: 90vh;
+  height: 80vh;
   overflow: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  max-width: 1000px;
+  max-width: 1100px;
   color: white;
   margin: 0 auto;
 }
